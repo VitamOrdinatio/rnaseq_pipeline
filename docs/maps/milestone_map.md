@@ -2,13 +2,19 @@
 
 ## Purpose
 Provide a reproducible RNA-seq analysis pipeline that transforms public sequencing data into gene-level functional evidence relevant to disease hypotheses.
-Outputs should support:
-- differential expression analysis 
-- network convergence or pathway-level interpretation 
-- later integration with: 
-    - GSC (direct, as gene-level support)
-    - VDB (optional / indirect / overlay attachment only)
-    - RDGP (direct, as functional weighting)
+
+Outputs should support a staged scientific ladder:
+
+- Level 1 — direct gene overlap
+- Level 2 — pathway overlap
+- Level 3 — phenotype support overlap (via gene-level evidence models)
+- Level 4 — module-level convergence
+- Level 5 — explicit network inference / network convergence
+
+These levels are intended to mature across repository versions:
+- v1 focuses on Levels 1–2
+- v2 adds Level 3
+- v3 develops Levels 4–5
 
 ---
 
@@ -18,6 +24,29 @@ Outputs should support:
 - "functional evidence": transcriptomic support derived from expression, pathway, or network-level signals
 - "gene-level functional evidence": expression-derived or network-derived support associated with a gene
 - "network convergence": coordinated signal across genes or pathways suggesting shared biological perturbation
+
+---
+
+## Scientific Analysis Ladder
+
+RSP develops in a staged analytical sequence:
+
+- Level 1 — direct gene overlap
+    Compare DEG-derived or ranked-gene outputs across perturbations.
+
+- Level 2 — pathway overlap
+    Compare enriched biological processes or pathways across contrasts.
+
+- Level 3 — phenotype support overlap (via gene-level evidence models)
+    Evaluate whether transcriptomic perturbations disproportionately affect phenotype-relevant genes, including GSC-derived evidence models.
+
+- Level 4 — module-level convergence
+    Identify overlapping co-expression modules or coordinated functional units across perturbations.
+
+- Level 5 — explicit network inference / network convergence
+    Test whether distinct perturbations converge on shared biological network structure, hubs, or vulnerable modules.
+
+These levels are analytical strata, not one-version-per-feature releases.
 
 ---
 
@@ -59,6 +88,33 @@ Fields:
 - evidence_source
 - analysis_version
 - run_id
+
+---
+
+## Output-to-Layer Mapping
+
+RSP outputs support the analytical ladder as follows:
+
+- Level 1 (direct gene overlap):
+    - DEG tables
+    - ranked gene lists
+
+- Level 2 (pathway overlap):
+    - pathway_support annotations
+    - pathway-enriched gene sets
+
+- Level 3 (phenotype support overlap):
+    - structured outputs compatible with GSC-derived evidence models
+
+- Level 4 (module-level convergence):
+    - network_support (module-aware signals)
+    - co-expression or clustering outputs (future)
+
+- Level 5 (network inference / convergence):
+    - explicit network models
+    - convergence scoring across datasets (future)
+
+v1 must fully support Levels 1–2 and produce outputs that are forward-compatible with Levels 3–5.
 
 ---
 
@@ -152,21 +208,32 @@ Pipeline produces defensible DEG outputs
 ---
 
 
-### M4 — Functional Interpretation Layer
+### M4a — Functional Interpretation Layer
 
 Add:
-- pathway / gene-set overlay 
-- candidate network convergence logic 
-
-Outputs may include:
-- DEG-linked gene evidence tables
+- Level 1 support: direct gene-overlap summaries
+- Level 2 support: pathway / GO-style interpretation
 - pathway-enriched gene sets
-- network-convergence support tables
+- structured gene-level functional evidence tables
+
+Optional early exploration:
+- identification of signals that may later support convergence analysis,
+  without making explicit convergence claims
 
 Goal:
-RSP becomes more than DEG generation; it produces interpretable functional evidence
+RSP becomes more than DEG generation and produces interpretable functional evidence suitable for later higher-order convergence analysis.
 
 ---
+
+### M4b — Phenotype Support Layer (v2 direction)
+
+Add:
+- GSC-based phenotype overlap or enrichment
+- phenotype-scoped functional support summaries
+- structured outputs suitable for attachment as phenotype-relevant functional evidence
+
+Goal:
+RSP can test whether transcriptomic perturbations disproportionately affect phenotype-relevant genes, not just biological pathways.
 
 
 ### M5 — Provenance + Reproducibility
@@ -268,12 +335,15 @@ RSP v1.0 (public)
 
 
 ## Future Upgrades (Post v1.0)
-- additional datasets 
-- stronger network convergence methods 
-- multi-dataset meta-analysis 
-- disease-specific expression signatures 
-- tighter integration with GSC and VDB 
-- optional visualization/reporting layer 
+
+- Level 3 maturation: stronger GSC-linked phenotype support analysis
+- Level 4 maturation: module-level convergence methods
+- Level 5 maturation: explicit network inference and network convergence
+- additional datasets
+- multi-dataset meta-analysis
+- disease-specific expression signatures
+- tighter integration with GSC and VDB
+- optional visualization/reporting layer
 
 ---
 
@@ -301,7 +371,14 @@ Interacts with:
 ```
 
 ## One Sentence Summary
-RSP answers: “Do the expression data provide functional support for candidate disease genes or pathways?”
+RSP answers: 
+
+```text
+“Do transcriptomic perturbations provide 
+functional support for candidate disease genes, 
+ pathways, phenotypes, or convergent biological 
+ networks?”
+```
 
 ---
 
