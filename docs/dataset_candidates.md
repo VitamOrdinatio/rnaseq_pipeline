@@ -1,269 +1,401 @@
-# dataset_candidates.md
+# 🧬 dataset_candidates.md (RSP-Aligned)
+
+---
 
 ## Overview
 
-This document summarizes candidate RNA-seq datasets for the `rnaseq_pipeline` based on:
-- pipeline design constraints
-- biological relevance to mitochondrial dysfunction, EBV, and epilepsy
-- feasibility for smoke testing and convergence analysis
+This document defines candidate RNA-seq datasets for the `rnaseq_pipeline` (RSP), aligned to:
+
+* the 5-layer scientific analysis ladder
+* the v1 / v2 / v3 release strategy
+* convergence-oriented experimental design
+
+Datasets are not selected for individual merit alone, but for their ability to support:
+
+```text
+cross-dataset convergence analysis across orthogonal perturbations
+```
 
 ---
 
-## Dataset Selection Criteria
+## 🧠 Core Design Principle
 
-### Hard Constraints
-- RNA-seq (not microarray)
-- Raw data available (SRA preferred)
-- Paired-end preferred
-- Same cell type per comparison
-- Human-derived preferred
-- Subsettable for pilot runs
+```text
+Within-dataset DEG → cross-dataset comparison at higher abstraction layers
+```
 
 ---
 
+## 🧬 Analytical Ladder Alignment
 
-### Soft Constraints
-- Published benchmark
-- Strong biological signal
-- Compatible with DEG + network analysis
-
----
-
-## Strategic Framing
-
-### Phase 1 — Pipeline Validation
-- clean perturbation dataset
-- minimal confounding
+| Level   | Goal                | Dataset Requirement          |
+| ------- | ------------------- | ---------------------------- |
+| Level 1 | Gene overlap        | Clean internal DEG contrast  |
+| Level 2 | Pathway overlap     | Strong perturbation signal   |
+| Level 3 | Phenotype support   | Disease-relevant biology     |
+| Level 4 | Module convergence  | Sufficient gene-level signal |
+| Level 5 | Network convergence | Orthogonal perturbation axes |
 
 ---
 
+## 🎯 Dataset Selection Criteria
 
-### Phase 2 — Disease-Relevant Datasets
-- genotype-driven preferred
+### Tier 1 — Required (v1 execution)
 
----
-
-
-### Phase 3 — Convergence Analysis
-Compare:
-- EBV
-- mitochondrial dysfunction
-- epilepsy / mTOR
-
-Using:
-- DEG overlap
-- pathway enrichment
-- gene_set_consensus
-- network proximity
+* Bulk RNA-seq (NOT scRNA)
+* ≥3 replicates per condition
+* Same cell type within contrast
+* Clear perturbation (genotype, infection, treatment)
+* Minimal confounding variables
+* FASTQ available (SRA)
 
 ---
 
-# Core Dataset Anchors
+### Tier 2 — Strongly Preferred
 
-## EBV Anchor
+* Human or human-derived systems
+* Genotype-driven perturbation
+* Single dominant variable per contrast
+* Clean case vs control framing
 
-#### GSE240008 — EBV Lytic Reactivation
+---
 
-**Type:** Bulk RNA-seq (cell line)
+### Tier 3 — Convergence Readiness (v2/v3)
+
+Datasets should map onto at least one axis:
+
+* neuronal function
+* mitochondrial biology
+* immune / viral response
+* mTOR / metabolic signaling
+
+---
+
+# 🧪 CURRENT EXECUTION SET (v1)
+
+These datasets define your **first convergence experiment**.
+
+---
+
+## 🔴 Viral Axis (EBV)
+
+### ✅ GSE240008 — EBV Lytic Reactivation
 
 **Role**
 
 ```text
-Primary pipeline validation dataset
+Pipeline validation + viral perturbation anchor
 ```
 
 **Strengths**
-    • strong signal 
-    • clean perturbation 
-    • ideal for iDEP benchmarking 
+
+* strong perturbation signal
+* clean experimental design
+* ideal for v1 pipeline testing
+
 **Limitations**
-    • cell line 
+
+* cell line context
 
 ---
 
-#### GSE161731 — Human EBV Infection
+## 🔵 Neuronal / Epilepsy Axis
+
+### ✅ GSE222259 — SCN2A iPSC Neurons
+
 **Role**
-Human validation layer
-**Limitations**
-    • heterogeneous 
 
----
+```text
+Primary neuronal disease anchor
+```
 
-## Mitochondrial Anchor
-#### GSE120854 — Mitochondrial Disease Fibroblasts
-**Type:** Bulk RNA-seq
 **Strengths**
-    • human 
-    • clean fibroblast system 
-**Limitations**
-    • mixed etiologies 
+
+* clean genotype contrast
+* homogeneous cell type
+* bulk-compatible
+* strong relevance to epilepsy
 
 ---
 
-#### GSE171537 — POLG Mutant Fibroblasts
+### ✅ GSE107878 — KCNQ2 / SCN2A Neurons (subset)
+
+**Role**
+
+```text
+Secondary epilepsy dataset (v1.5 / v2)
+```
+
+**Constraint**
+
+```text
+MUST subset to clean genotype contrast
+```
+
+---
+
+## 🟢 mTOR / TSC Axis
+
+### ✅ GSE264590 — TSC2 Isogenic NPCs
+
+**Role**
+
+```text
+Primary pathway perturbation anchor
+```
+
 **Strengths**
-    • direct POLG relevance 
-    • genotype-driven 
-**Limitations**
-    • non-neuronal 
+
+* isogenic system
+* clean genotype structure
+* excellent replicates
+* minimal confounding
 
 ---
 
-#### GSE184400 — iPSC-derived Neurons (Mito Dysfunction)
+### ✅ GSE239412 — TSC1 NPCs + Rapamycin
+
+**Role**
+
+```text
+Mechanistic expansion dataset (v2)
+```
+
 **Strengths**
-    • neuron-relevant 
-**Limitations**
-    • differentiation variability 
+
+* separates intrinsic vs treatment effects
+* strong pathway interpretability
 
 ---
 
-#### GSE148602 — mtDNA Depletion Model
+## 🟡 Mitochondrial Axis
+
+### ✅ GSE171537 — POLG Mutant Fibroblasts
+
+**Role**
+
+```text
+Primary mitochondrial disease anchor
+```
+
 **Strengths**
-    • controlled perturbation 
-**Limitations**
-    • non-genotype driven 
+
+* direct genotype-driven mitochondrial defect
+* strong biological interpretability
+
+**Limitation**
+
+* non-neuronal system
 
 ---
 
-#### GSE104827 — OXPHOS Deficiency
+### ✅ GSE120854 — Mitochondrial Disease Fibroblasts
+
+**Role**
+
+```text
+Mitochondrial generalization dataset (v2)
+```
+
 **Strengths**
-    • strong metabolic signal 
+
+* human-derived
+* broader mitochondrial dysfunction
 
 ---
 
-## Epilepsy Dataset Candidates
+# 🧠 CONVERGENCE STRUCTURE
 
-### Bulk / Bulk-Compatible (First-Pass)
+Your current dataset set forms:
 
-#### GSE222259 — SCN2A iPSC Neurons
-    • clean genotype 
-    • bulk RNA-seq 
-    • minimal confounding 
+```text
+GENOTYPE → TRANSCRIPTOME → PATHWAY → NETWORK
+```
 
----
+across:
 
-#### GSE107878 — KCNQ2 / SCN2A Neurons
-    • must subset epilepsy-relevant arms 
-    • network-relevant 
+* EBV (viral perturbation)
+* SCN2A (neuronal disease)
+* TSC2 (pathway dysregulation)
+* POLG (mitochondrial dysfunction)
 
----
+This is:
 
-#### GSE256142 — Dravet Organoids
-    • strong biological relevance 
-    • bulk RNA-seq 
-
----
-
-### Second-Pass / High-Complexity
-
-#### GSE215362 — ARX Organoids (scRNA-seq)
-    • developmental epilepsy 
-    • single-cell 
+```text
+orthogonal perturbation design for convergence testing
+```
 
 ---
 
-#### GSE245113 — Dravet GABAergic Neurons (scRNA-seq)
-    • disease anchored 
-    • inhibitory neuron biology 
+# 🧬 EXTENDED DATASET PANEL (v2 / v3)
+
+These datasets should be used only after pipeline stabilization.
 
 ---
 
-## mTOR / GATOR1 / TSC Candidates
+## 🧠 Epilepsy Expansion
 
-### First-Pass (Best)
+### ⚠️ GSE256142 — Dravet Organoids
 
-##### GSE264590 — TSC2 Isogenic NPCs
-    • best dataset overall 
-    • clean genotype + replicates 
-
----
-
-##### GSE239412 — TSC1 NPCs + Rapamycin
-    • treatment vs intrinsic signal separation 
+* biologically strong
+* high variability (organoid system)
 
 ---
 
-##### GSE137614 — TSC2 Differentiation Series
-    • rich dataset 
-    • requires subsetting 
+## 🟢 mTOR Expansion
+
+### ⚠️ GSE137614 — TSC2 Differentiation Series
+
+* requires strict subsetting
+
+### ⚠️ GSE247367 — TSC2 Organoids
+
+* developmental variability
 
 ---
 
-### Second-Pass
+## 🟡 Mito Expansion
 
-##### GSE247367 — TSC2 Organoids
-    • developmental relevance 
+### ⚠️ GSE184400 — iPSC Neuron Mito Dysfunction
 
----
-
-##### GSE235862 — TSC Neurovascular Model
-    • niche but valuable 
+* valuable neuronal bridge
+* differentiation confounding
 
 ---
 
-##### GSE240337 — DEPDC5 KO Neurons
-    • direct GATOR1 relevance 
+### ⚠️ GSE148602 — mtDNA depletion
+
+* controlled but non-genotype-driven
 
 ---
 
-##### GSE286912 — TSC Hyperactivity Model
-    • mechanistic follow-up dataset 
+# 🔴 EXCLUDED (v1 pipeline incompatible)
 
+### ❌ scRNA-seq datasets
 
----
+* GSE215362
+* GSE245113
 
-## EBV Extended Dataset Panel
+### ❌ mixed / unclear designs
 
-##### GSE103198 — Primary B Cell Infection
-    • human primary system 
-
----
-
-##### GSE125974 — Latent vs Lytic
-    • state transition analysis 
+* GSE286912
+* GSE235862
 
 ---
 
-##### GSE118145 — LCLs
-    • chronic EBV reference 
+# 🧠 CRITICAL RISKS
+
+### 1. Cell-Type Mismatch
+
+```text
+NPC vs neuron vs fibroblast vs B cell
+→ interpret only at pathway/module level
+```
 
 ---
 
-##### GSE51546 — Time-Course Infection
-    • dynamic response 
+### 2. Cross-Dataset Batch Effects
+
+```text
+Cannot be corrected directly
+→ use within-dataset DEG only
+→ compare at higher abstraction layers
+```
 
 ---
 
-## SRA Validation Checklist
-    • paired-end confirmation 
-    • FASTQ size sanity check 
-    • replicate count ≥2 (≥3 ideal) 
-    • same cell type within contrast 
-NOTE:
-Mark removes size constraints, but design quality still dominates.
+### 3. Effect Size Imbalance
+
+```text
+EBV >> mitochondrial > epilepsy
+→ normalize interpretation, NOT raw values
+```
 
 ---
 
-## Execution Plan
-Step 1
-GSE240008 → pipeline validation
-Step 2
-GSE222259 or GSE107878 → epilepsy anchor
-Step 3
-GSE264590 → mTOR anchor
-Step 4
-Integrate mito datasets
-Step 5
-Perform convergence analysis
+# 🧠 VALIDATION STRATEGY
+
+Each dataset must:
+
+1. Reproduce expected biology:
+
+   * mTOR (TSC2)
+   * ion channel (SCN2A)
+   * ETC (POLG)
+   * immune/metabolic (EBV)
+
+2. Produce stable DEG results
+
+3. Generate interpretable pathway outputs
 
 ---
 
-## Core Hypothesis
-Do EBV infection, mitochondrial dysfunction, and epilepsy mutations
-converge on shared metabolic / neuronal / immune networks?
+# 🚀 EXECUTION PLAN
+
+### Phase 1 — Pipeline Validation
+
+```text
+GSE240008
+```
+
+---
+
+### Phase 2 — First Convergence Triangle
+
+```text
+Epilepsy: GSE222259
+mTOR:     GSE264590
+Mito:     GSE171537
+```
+
+---
+
+### Phase 3 — Expansion
+
+```text
+GSE239412
+GSE107878
+GSE120854
+```
+
+---
+
+# 🧠 CORE HYPOTHESIS
+
+```text
+Do EBV infection, mitochondrial dysfunction,
+and epilepsy-associated mutations converge
+on shared vulnerable biological systems?
+```
+
+---
+
+# 🏁 Bottom Line
+
+You now have:
+
+* 4 primary anchor datasets (v1)
+* 3 expansion datasets (v2)
+* clear exclusions
+* a convergence-ready design
+
+This is:
+
+```text
+publishable-quality experimental structure
+```
+
+---
+
+# 👉 Next Step
+
+```text
+→ Build SRR shortlist
+→ Verify pairing + replicates
+→ Generate manifest.yaml
+→ Execute first pipeline run on MARK
+```
 
 ---
 
 # End of dataset_candidates.md
-
----

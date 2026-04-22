@@ -1,167 +1,98 @@
-# 🧠 TRIAGE FRAMEWORK (applied)
-Each dataset is evaluated across:
-1. Read Type (paired-end vs single-end)
-2. FASTQ Size / Feasibility
-3. Replicates (statistical validity)
-4. Cell-Type Consistency (confounding)
-5. Contrast Clarity (case vs control)
-6. Pipeline Compatibility (bulk vs scRNA)
+# dataset_triage.md
 
-##🔬 RESULTS — TIERED OUTPUT
-### 🟢 TIER 1 — IMMEDIATE EXECUTION (Mark-ready, repo4 v1 candidates)
-These are clean, bulk-compatible, low-confounding, and actionable now.
+# 🔬 Dataset Triage Framework (Aligned to RSP)
 
-#### 🧠 Epilepsy
-##### ✅ GSE222259 — SCN2A iPSC neurons
-Read type: paired-end (expected, confirm at SRR level)
-Replicates: YES
-Cell type: homogeneous neurons
-Contrast: WT vs SCN2A+/−
-Pipeline: PERFECT (bulk)
-Verdict
-#1 epilepsy dataset — run this first
+## Purpose
 
-##### ✅ GSE107878 — KCNQ2 / SCN2A neurons (subset required)
-Replicates: YES
-Cell type: consistent neurons
-Contrast: KO vs control (subset)
-Risk: mixed study — must subset
-Verdict
-#2 epilepsy dataset — after subsetting
+Select RNA-seq datasets that enable:
 
-#### 🧠 mTOR / TSC
-##### ✅ GSE264590 — TSC2 isogenic NPCs
-Replicates: YES
-Cell type: NPC (clean)
-Contrast: WT vs het vs KO
-Pipeline: PERFECT
-Verdict
-#1 mTOR dataset — highest quality overall
+```text
+Level 1–2 (v1): valid within-dataset DEG + pathway interpretation  
+Level 3 (v2): phenotype-support overlap via GSC  
+Level 4–5 (v3): module/network convergence across perturbations
+```
 
-##### ✅ GSE239412 — TSC1 NPCs + rapamycin
-Replicates: YES
-Cell type: NPC
-Contrast: genotype + treatment
-Strength: mechanistic clarity
-Verdict
-#2 mTOR dataset — mechanistic goldmine
+---
 
-### 🟡 TIER 2 — EXECUTE AFTER PIPELINE STABILIZATION
-These are strong but require subsetting, filtering, or interpretation care.
+## 🧠 Core Strategy
 
-#### 🧠 Epilepsy
-##### ⚠️ GSE256142 — Dravet organoids
-Cell type: organoid (variable)
-Replicates: likely OK
-Contrast: disease vs control
-Risk: differentiation variability
-Use
-Phase 2 biology dataset
+DO:
+- Perform within-dataset DEG
+- Compare across datasets at higher abstraction layers
 
-#### 🧠 mTOR
-##### ⚠️ GSE137614 — TSC2 differentiation series
-Problem: time-course + multiple lineages
-Risk: confounding if not subset
-Use
-Select 1 lineage + 1 timepoint ONLY
+DO NOT:
+- Pool datasets for joint DEG modeling
+- Compare raw DEG lists across studies
 
-##### ⚠️ GSE247367 — TSC2 organoids
-Same issues as epilepsy organoids
+---
 
-### 🔴 TIER 3 — DO NOT USE (for bulk pipeline)
-These will break or distort your initial analysis.
+## 🧬 Analytical Ladder Mapping
 
-##### ❌ GSE215362 — ARX (scRNA-seq)
-##### ❌ GSE245113 — Dravet GABA neurons (scRNA-seq)
-Pipeline mismatch:
-scRNA ≠ bulk pipeline
+```text
+Layer	Goal	Dataset Requirement
+Level 1	Gene overlap	Clean DEG contrast
+Level 2	Pathway overlap	Strong perturbation signal
+Level 3	Phenotype support	Relevant disease/biology context
+Level 4	Module convergence	Sufficient gene-level signal
+Level 5	Network convergence	Multiple orthogonal perturbations
+```
 
-##### ❌ GSE235862 — neurovascular unit
-Cell-type mismatch vs rest of pipeline
+---
 
-##### ❌ GSE286912 — unclear design / weak contrast
-Low signal clarity
+## 🎯 Dataset Selection Criteria
 
-## 🧬 EBV + MITO QUICK TRIAGE (important context)
-From your file:
+### Tier 1 (Required for v1)
 
-### 🟢 KEEP
-GSE240008 — EBV (gold standard v1)
-GSE120854 — mito fibroblasts
-GSE171537 — POLG fibroblasts
+- Same cell type within dataset
+- ≥3 replicates per condition
+- Clear perturbation (KO, infection, mutation)
+- Bulk RNA-seq
+- Clean metadata
 
-### 🟡 SECONDARY
-GSE103198 — primary B cells
-GSE125974 — latency vs lytic
+### Tier 2 (Strongly Preferred)
 
-### 🔴 LOWER VALUE
-GSE118145 — LCL (transformation bias)
-GSE51546 — time-course (complex)
+- Human or human-derived models
+- Disease relevance (epilepsy, mitochondrial, viral)
+- Minimal multi-factor confounding
+- Single primary perturbation
 
-## 🧠 FINAL EXECUTION SET (THIS IS YOUR REAL PLAN)
-### 🧪 Phase 1 — pipeline validation
-GSE240008
+### Tier 3 (Future-Proofing for v2/v3)
 
-### 🧪 Phase 2 — first convergence triangle
-Epilepsy:     GSE222259
-mTOR:         GSE264590
-Mito:         GSE171537
-This is your cleanest convergence test possible.
+- Perturbations that map to:
+  - mitochondrial biology
+  - neuronal function
+  - immune response
 
-### 🧪 Phase 3 — mechanistic expansion
-GSE239412 (rapamycin)
-GSE107878 (subset)
-GSE120854 (mito diversity)
+- Compatibility with GSC phenotype modeling
 
-## 🧠 CRITICAL INSIGHT (this is the payoff)
-Your triaged dataset set now forms:
-GENOTYPE → TRANSCRIPTOME → NETWORK
-across:
-SCN2A (epilepsy)
-TSC2 (mTOR)
-POLG (mitochondrial)
-EBV (viral perturbation)
-That is extremely strong.
+---
 
-## ⚠️ RISKS (explicit per research standard)
-1. Cell-type mismatch
-NPC vs neuron vs fibroblast vs B cell
-→ must interpret at pathway level, not gene level
+## 🧪 Current Execution Set (v1)
 
-2. Batch effects (cross-GEO)
-cannot be fully corrected
-→ use within-dataset DEG → cross-dataset enrichment
+```text
+Axis	Dataset	Role
+EBV	GSE240008	Viral perturbation anchor
+Epilepsy	GSE222259	Neuronal disease anchor
+mTOR/TSC	GSE264590	Pathway perturbation anchor
+POLG/Mito	GSE171537	Mitochondrial anchor
+```
 
-3. Effect size mismatch
-EBV >> mito > epilepsy
-→ normalize interpretation, not raw counts
+---
 
-## 🧠 VALIDATION STRATEGY
-You must verify:
-1. Each dataset reproduces its paper’s key findings
-2. Known pathways are enriched:
-   - mTOR (TSC)
-   - ion channels (SCN2A)
-   - ETC (POLG)
-   - immune/metabolic (EBV)
-Then:
-3. Test convergence:
-   overlap OR enrichment OR network proximity
+## ⚠️ Known Constraints
 
-## 🏁 Bottom line
-After triage:
-You now have:
-- 4 gold-standard datasets (EBV, POLG, SCN2A, TSC2)
-- 3 expansion datasets
-- 4 datasets to ignore (for now)
-This is a publishable-quality experimental design if executed correctly.
+```text
+Cell-type mismatch is unavoidable
+→ enforce within-dataset DEG
+→ cross-dataset comparison only at pathway/module/network level
+```
 
-## 👉 Next step (recommended)
-Say:
-“build SRR shortlist”
-and I will:
-    • pick exact SRRs 
-    • verify pairing (you got burned once—won’t happen again) 
-    • estimate runtime on Mark 
-    • generate your first manifest.yaml 
-That’s the moment this becomes a real pipeline run.
+---
+
+## 🚀 Immediate Next Step
+
+```text
+→ SRR shortlist
+→ manifest.yaml
+→ v1 pipeline execution
+```
