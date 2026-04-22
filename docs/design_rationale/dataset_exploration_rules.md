@@ -4,12 +4,12 @@
 
 Select RNAseq datasets that:
 - maximize the ability to detectshared pathway/module/network signals across mechanistically distinct perturbations such as:
-		- EBV
-		- epilepsy
-		- mTOR
-		- POLG
-		- TSC2
-		- POLG
+  - EBV
+  - epilepsy
+  - mTOR
+  - POLG
+  - TSC2
+  - POLG
 
 within a comparable biological context.
 
@@ -40,14 +40,14 @@ Each dataset gets a weighted score based on these SEVEN features:
 
 Controls biological comparability across datasets
 
-  - Same relevant lineage (neuronal, immune, fibroblast, etc.) 
-  - Prefer: 
-      - iPSC-derived neurons 
-      - primary human cells 
-  - Penalize: 
-      - mixed tissues 
-      - organoids (unless tightly controlled) 
-      - cross-lineage comparisons within dataset
+- Same relevant lineage (neuronal, immune, fibroblast, etc.) 
+- Prefer: 
+    - iPSC-derived neurons 
+    - primary human cells 
+- Penalize: 
+    - mixed tissues 
+    - organoids (unless tightly controlled) 
+    - cross-lineage comparisons within dataset
  
 Why: Cell identity dominates transcriptomic signal.
 
@@ -55,14 +55,14 @@ Why: Cell identity dominates transcriptomic signal.
 
 Ensures interpretable causal signal
 
-  - Prefer: 
-      - genotype (KO, LOF, mutation) 
-      - controlled infection / defined stimulus 
-  - Accept: 
-      - clean chemical perturbations (e.g., ETC inhibitors) 
-  - Penalize: 
-      - multi-factor designs (unless subsettable) 
-      - unclear perturbation structure 
+- Prefer: 
+    - genotype (KO, LOF, mutation) 
+    - controlled infection / defined stimulus 
+- Accept: 
+    - clean chemical perturbations (e.g., ETC inhibitors) 
+- Penalize: 
+    - multi-factor designs (unless subsettable) 
+    - unclear perturbation structure 
   
 Why: Clean perturbations produce interpretable downstream signals.
 
@@ -70,13 +70,13 @@ Why: Clean perturbations produce interpretable downstream signals.
 
 Reduces confounding
 
-  - Ideal: 
-      - single variable (case vs control) 
-  - Accept: 
-      - multi-factor if one clean contrast can be isolated 
-  - Penalize: 
-      - timecourse-heavy designs (for v1) 
-      - differentiation + treatment + genotype combined 
+- Ideal: 
+    - single variable (case vs control) 
+- Accept: 
+    - multi-factor if one clean contrast can be isolated 
+- Penalize: 
+    - timecourse-heavy designs (for v1) 
+    - differentiation + treatment + genotype combined 
 
 Why: Simpler designs → cleaner DEGs → better downstream convergence.
 
@@ -84,11 +84,11 @@ Why: Simpler designs → cleaner DEGs → better downstream convergence.
 
 Statistical reliability
 
-  - ≥3 per group = full score 
-  - Balanced design preferred 
-  - Penalize: 
-      - n=2 
-      - uneven group sizes 
+- ≥3 per group = full score 
+- Balanced design preferred 
+- Penalize: 
+    - n=2 
+    - uneven group sizes 
 
 Why: Weak replication destabilizes DEG → propagates noise into all layers.
 
@@ -96,14 +96,14 @@ Why: Weak replication destabilizes DEG → propagates noise into all layers.
 
 Determines whether convergence is even detectable
 
-  - Strong perturbations: 
-      - infection 
-      - KO / LOF 
-      - ETC disruption 
-  - Moderate: 
-      - subtle regulatory mutations 
-  - Penalize: 
-      - weak or noisy effects 
+- Strong perturbations: 
+    - infection 
+    - KO / LOF 
+    - ETC disruption 
+- Moderate: 
+    - subtle regulatory mutations 
+- Penalize: 
+    - weak or noisy effects 
 
 Why: No signal → no pathway/module/network inference.
 
@@ -112,13 +112,13 @@ Why: No signal → no pathway/module/network inference.
 Alignment with your convergence hypothesis
 Dataset should map to one of:
 
-  - EBV / immune signaling 
-  - neuronal excitability (SCN2A-like) 
-  - mitochondrial dysfunction (POLG-like) 
-  - mTOR / metabolic signaling 
-  - bridges: 
-      - neuron + immune 
-      - neuron + mitochondrial 
+- EBV / immune signaling 
+- neuronal excitability (SCN2A-like) 
+- mitochondrial dysfunction (POLG-like) 
+- mTOR / metabolic signaling 
+- bridges: 
+    - neuron + immune 
+    - neuron + mitochondrial 
 
 Why: Convergence requires meaningful biological overlap.
 
@@ -141,10 +141,10 @@ Why: Bridges enable multi-step convergence inference.
 Final Score = Σ(weight × feature score)
 
 Range:
-    - 85–100 → core dataset (v1 anchor) 
-    - 70–85 → strong support / expansion 
-    - 55–70 → conditional (use cautiously) 
-    - <55 → reject 
+  - 85–100 → core dataset (v1 anchor) 
+  - 70–85 → strong support / expansion 
+  - 55–70 → conditional (use cautiously) 
+  - <55 → reject 
 
 ## META-RULES FOR MAXIMIZING NETWORK CONVERGENCE TESTING
 
@@ -163,8 +163,8 @@ Bridges = shared biological space
 
 #### Rule 3 — Optimize for Level 2–5 (not Level 1)
 
-    - Gene overlap is weak and noisy 
-    - Pathway, module, and network levels carry the signal for hypothesis testing
+- Gene overlap is weak and noisy 
+- Pathway, module, and network levels carry the signal for hypothesis testing
 
 #### Rule 4 — Penalize “complex but impressive” datasets
 
