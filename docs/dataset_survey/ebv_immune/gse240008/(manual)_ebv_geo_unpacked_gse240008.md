@@ -76,6 +76,7 @@ So our workflow becomes:
 ### 🔬 Phase 1 — GEO understanding
 
 We discuss:
+
     • biological system 
     • perturbations 
     • axes 
