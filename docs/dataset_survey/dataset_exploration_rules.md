@@ -772,6 +772,26 @@ Maximize convergence detectability by selecting GEOs that are:
     • connected through shared biological context 
     • auditable under this rulebook 
 
+---
+
+## 15. Scope Limitation
+
+This rulebook is a deterministic intake and prioritization framework for GEO selection.
+
+It does not by itself establish network convergence validity.
+
+Its role is to improve the probability that selected datasets will support interpretable downstream convergence analysis.
+
+Final claims of network convergence will ultimately depend on downstream methodological choices, including:
+- DEG generation
+- enrichment strategy
+- module inference
+- network definition
+- null models
+- robustness analysis
+
+---
+
 # End of File
 
 ---
