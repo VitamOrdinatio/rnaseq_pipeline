@@ -1,6 +1,7 @@
 # GEO Dataset Unpacked – GSE250182
 
 ## Title for GSE250182
+
 Human iPSC-derived astrocytes with GBA knockout under inflammatory stimulation
 
 ---
@@ -14,7 +15,6 @@ Human iPSC-derived astrocytes with GBA knockout under inflammatory stimulation
 ### Secondary / Downstream Studies
 
 `None ingested for this scoring pass (by instruction)`
-
 
 ---
 
@@ -232,6 +232,8 @@ FSF_raw =
 
 FSF = 95.00 / 100
 
+---
+
 ## 🏁 Final Output
 
 GEO contrast: GSE250182 / WT astrocytes / Sham vs ITC
@@ -250,12 +252,16 @@ FSF: 95.00 / 100
 
 Interpretation: critical bridge dataset
 
+---
+
 ## 🧠 Notes / Limitations
 
     • **astrocytes** ≠ neurons 
     • in vitro differentiation system 
     • cytokine cocktail is artificial stimulus 
     • still acceptable as first bridge layer 
+
+---
 
 ## 🔬 System-Level Interpretation
 
@@ -267,8 +273,12 @@ Strength:
     • provides controlled entry into CNS context 
     • high signal, low confounding 
 
+---
+
 ## 🚀 Recommendation
 
 KEEP as primary NEURO_IMMUNE bridge dataset
 until/unless replaced by:
 `clean neuronal + immune perturbation GEO`
+
+---
