@@ -1,553 +1,434 @@
 # Dataset Exploration Rules
 
+**Repository:** rnaseq_pipeline (RSP)  
 
-## Design Goal
+**Purpose:** deterministic GEO triage and scoring for convergence-oriented RNA-seq dataset selection
 
-Select RNAseq datasets that:
-- maximize the ability to detectshared pathway/module/network signals across mechanistically distinct perturbations such as:
-  - EBV
-  - epilepsy
-  - mTOR
-  - POLG
-  - TSC2
-  - POLG
+---
 
-within a comparable biological context.
+## 1. Design Goal
+
+Select RNA-seq datasets that maximize the ability to detect **shared pathway-, module-, and network-level signals** across mechanistically distinct perturbations, including:
+
+- EBV / immune signaling
+- neuronal excitability biology
+- mTOR / metabolic signaling
+- mitochondrial dysfunction / POLG-related biology
+within a biologically interpretable and transcriptomically comparable framework.
+
+This rulebook exists so that multiple evaluators can score GEO datasets **consistently, transparently, and auditably** for the RSP portfolio goal.
+
+---
+
+## 2. Core Design Principle
+
+RSP is designed around the following rule:
+
+```text
+Within-dataset differential expression
+→ cross-dataset comparison only at higher abstraction layers
+```
+
+This means:
+      
+    • DEGs are generated within a single GEO-defined experimental system 
+    • GEOs are not pooled together for joint DEG modeling 
+    • cross-dataset comparison is performed at the level of: 
+        ◦ pathways 
+        ◦ modules 
+        ◦ networks 
+        ◦ phenotype-support layers 
+
+---
+
+## 3. Analytical Context
+
+Dataset exploration must support the full RSP scientific ladder:
+
+    • Level 1 — direct gene overlap 
+    • Level 2 — pathway overlap 
+    • Level 3 — phenotype support overlap 
+    • Level 4 — module-level convergence 
+    • Level 5 — explicit network convergence 
+
+Practical interpretation:
+
+    • Level 1 is weak and noisy across heterogeneous GEOs 
+    • Level 2–5 carry the main signal for the convergence hypothesis 
+    • GEO selection should therefore optimize primarily for Levels 2–5 
 
 
 ---
 
-## Primary Axes and Bridge Axes
+## 4. Axis System
 
-An axis can exist as a primary axis or bridge axis.
+Each GEO must be assigned:
 
-### Primary Axis Types
+    • exactly one Primary Axis 
+    • optionally one Bridge Axis 
 
-A primary axis contains the core biology anchorage, including the core perturbation domains in the convergence design.
+A GEO must never have multiple primary axes.
 
-Rule:
-`Each GEO maps to a primary axis.`
+### 4.1 Primary Axes
 
-For this convergence project, there are four primary axis types:
+Primary axes represent the dominant perturbation domain.
 
-1. EBV_IMMUNE
-2. NEURONAL_EXCITABILITY
-3. MTOR_METABOLIC
-4. MITOCHONDRIAL
+#### A. EBV_IMMUNE
 
+Definition:
 
-### Bridge Axis Types
+    • EBV infection or reactivation 
+    • interferon signaling 
+    • innate / adaptive immune activation 
+    • viral-host response biology 
 
-A bridge axis contains overlapping elements and is useful to bridge primary axes in an effort to identify shared latent biological space.
-
-For this convergence project, there are four bridge axis types:
-
-1. NEURO_IMMUNE
-2. NEURO_MITO
-3. IMMUNE_MITO (optional)
-4. META_INTEGRATION (optional)
-
----
-
-## CORE RULESET (with weights)
-
-### Tier 1 — Hard Inclusion Criteria (must pass)
-
-Hard inclusion criteria are  gates and are not scored. 
-
-If a dataset fails any of the following hard inclusion criteria, then it is rejected for further consideration. 
-
-Include the dataset only if it is:
-  - Bulk RNA-seq (not scRNA) 
-  - ≥ 3 biological replicates per condition 
-  - Clear case vs control (or subsettable to one) 
-  - Single dominant perturbation (or isolatable) 
-  - Same cell type within comparison 
-
-HIC = pass only if all 5 hard criteria pass
-
-
-### Tier 2 — Matching & Convergence Scoring (0–100)
-
-Each dataset gets a weighted score based on these SEVEN features:
-
-#### 1. Cell Type Alignment (CTA) — Weight: 0.25 (highest)
-
-Controls biological comparability across datasets
-
-- Same relevant lineage (neuronal, immune, fibroblast, etc.) 
-- Prefer: 
-    - iPSC-derived neurons 
-    - primary human cells 
-- Penalize: 
-    - mixed tissues 
-    - organoids (unless tightly controlled) 
-    - cross-lineage comparisons within dataset
- 
-Why: Cell identity dominates transcriptomic signal.
-
-#### 2. Perturbation Type Clarity (PTC) — Weight: 0.15
-
-Ensures interpretable causal signal
-
-- Prefer: 
-    - genotype (KO, LOF, mutation) 
-    - controlled infection / defined stimulus 
-- Accept: 
-    - clean chemical perturbations (e.g., ETC inhibitors) 
-- Penalize: 
-    - multi-factor designs (unless subsettable) 
-    - unclear perturbation structure 
-  
-Why: Clean perturbations produce interpretable downstream signals.
-
-#### 3. Experimental Simplicity (ExS) — Weight: 0.10
-
-Reduces confounding
-
-- Ideal: 
-    - single variable (case vs control) 
-- Accept: 
-    - multi-factor if one clean contrast can be isolated 
-- Penalize: 
-    - timecourse-heavy designs (for v1) 
-    - differentiation + treatment + genotype combined 
-
-Why: Simpler designs → cleaner DEGs → better downstream convergence.
-
-#### 4. Replicate Strength (ReS) — Weight: 0.10
-
-Statistical reliability
-
-- ≥3 per group = full score 
-- Balanced design preferred 
-- Penalize: 
-    - n=2 
-    - uneven group sizes 
-
-Why: Weak replication destabilizes DEG → propagates noise into all layers.
-
-#### 5. Signal Quality / Effect Size (SQES) — Weight: 0.15
-
-Determines whether convergence is even detectable
-
-- Strong perturbations: 
-    - infection 
-    - KO / LOF 
-    - ETC disruption 
-- Moderate: 
-    - subtle regulatory mutations 
-- Penalize: 
-    - weak or noisy effects 
-
-Why: No signal → no pathway/module/network inference.
-
-#### 6. Biological Axis Relevance (BAR) — Weight: 0.15
-
-Alignment with your convergence hypothesis
-Dataset should map to one of:
-
-- Human or human-derived system (preferred) 
-- EBV / immune signaling 
-- neuronal excitability (SCN2A-like) 
-- mitochondrial dysfunction (POLG-like) 
-- mTOR / metabolic signaling 
-- bridges: 
-    - neuron + immune 
-    - neuron + mitochondrial 
-
-Why: Convergence requires meaningful biological overlap.
-
-#### 7. Bridge Value (BrV) (Continuity Contribution) — Weight: 0.10
-
-Does this dataset connect otherwise distant axes?
-
-High value if dataset:
-  - links neuron ↔ immune 
-  - links neuron ↔ mitochondrial 
-  - links mitochondrial ↔ metabolism 
-
-Low value if:
-  - redundant within an already-covered axis 
-
-Why: Bridges enable multi-step convergence inference.
-
-## FINAL SCORE FORMULA (FSF)
-
-Final Score = Σ(weight × feature score)
-
-Range:
-  - 85–100 → core dataset (v1 anchor) 
-  - 70–85 → strong support / expansion 
-  - 55–70 → conditional (use cautiously) 
-  - <55 → reject 
-
-## META-RULES FOR MAXIMIZING NETWORK CONVERGENCE TESTING
-
-These are not weights—they’re governing principles.
-
-#### Rule 1 — Never compare raw expression across datasets
-
-- Within-dataset DEG only (i.e., do not pool SRRs from different GEOs)
-- cross-dataset comparison occurs only at the pathway/module/network level
-
-#### Rule 2 — Prefer orthogonal perturbations, but ensure continuity
-
-Orthogonal = independent biology
-
-Bridges = shared biological space
-
-#### Rule 3 — Optimize for Level 2–5 (not Level 1)
-
-- Gene overlap is weak and noisy 
-- Pathway, module, and network levels carry the signal for hypothesis testing
-
-#### Rule 4 — Penalize “complex but impressive” datasets
-
-Complex ≠ useful
-
-A simple, clean dataset is more valuable than a large, messy one.
-
-#### Rule 5 — Dataset set > individual dataset
-
-We are chasing a system of datasets, not evaluating them independently.
-
----
-
-## Detailed Info on Primary Axis Types
-
-### 🧠 1. Primary Axis Types
-
-These are the core perturbation domains in our convergence design.
-Each GEO should map to one primary axis.
-
-#### 🔴 A. Viral / Immune Axis (EBV)
-
-Axis name: EBV_IMMUNE
-
-Definition
-
-    • Viral infection (EBV specifically preferred) 
-    • Interferon signaling 
-    • innate/adaptive immune activation 
-
-Examples
+Examples:
 
     • EBV lytic reactivation 
-    • IFNβ stimulation (non-EBV but immune-aligned) 
+    • IFN-treated systems where immune signaling is the dominant perturbation 
 
-#### 🔵 B. Neuronal / Excitability Axis
+#### B. NEURONAL_EXCITABILITY
 
-Axis name: NEURONAL_EXCITABILITY
+Definition:
 
-Definition
-
-    • Ion channel mutations (SCN2A, KCNQ2, etc.) 
+    • ion channel mutations 
     • neuronal firing / synaptic biology 
-    • epilepsy-relevant neuronal systems 
+    • epilepsy-relevant neuronal excitability systems 
 
-Important clarification
+Important note:
 
-This is not “epilepsy diagnosis” — it is:
-neuronal excitability biology
+This axis refers to neuronal excitability biology, not merely an autism or epilepsy diagnosis label.
 
-#### 🟢 C. mTOR / Metabolic Signaling Axis
+Examples:
+    • SCN2A neuronal models 
+    • KCNQ2 neuronal models 
 
-Axis name: MTOR_METABOLIC
+#### C. MTOR_METABOLIC
 
-Definition
+Definition:
 
     • TSC1 / TSC2 perturbations 
     • mTORC1 signaling 
-    • nutrient / growth / energy sensing 
+    • nutrient sensing 
+    • growth / energy integration 
 
-#### 🟡 D. Mitochondrial Axis
+Examples:
 
-Axis name: MITOCHONDRIAL
+    • TSC2 isogenic models 
+    • rapamycin / mTOR-response designs where mTOR biology is dominant 
 
-Definition
+#### D. MITOCHONDRIAL
 
-    • POLG mutations 
+Definition:
+
+    • POLG mutation or depletion 
+    • oxidative phosphorylation defects 
     • ETC dysfunction 
-    • mtDNA defects 
-    • oxidative phosphorylation 
+    • mtDNA maintenance defects 
+    • primary mitochondrial stress biology 
 
----
+Examples:
 
-## Detailed Info on Bridge Axis Types
+    • POLG mutant fibroblasts 
+    • ETC inhibitor models where mitochondrial impairment is dominant 
 
-### 🧠 2. Bridge Axis Types (continuity layers)
+### 4.2 Bridge Axes
 
-These are NOT primary anchors.
+Bridge axes are optional labels used when a GEO connects two otherwise orthogonal biological spaces.
 
-They exist to:
-`connect otherwise orthogonal biological spaces`
+#### E. NEURO_IMMUNE
 
-A GEO can have:
-    • one primary axis 
-    • AND optionally one bridge axis label 
-
-#### 🟣 E. Neuron + Immune Bridge
-
-Axis name: NEURO_IMMUNE (bridge)
-
-Definition
+Definition:
 
     • neuronal system 
-    • with immune / interferon / inflammatory perturbation 
+    • immune / interferon / inflammatory perturbation 
 
-Connects
+Connects:
+
 `EBV_IMMUNE ↔ NEURONAL_EXCITABILITY`
 
-#### 🟠 F. Neuron + Mitochondrial Bridge
+#### F. NEURO_MITO
 
-Axis name: NEURO_MITO (bridge)
-
-Definition
+Definition:
 
     • neuronal system 
-    • with mitochondrial stress / dysfunction 
+    • mitochondrial stress / dysfunction 
 
-Connects
+Connects:
+
 `NEURONAL_EXCITABILITY ↔ MITOCHONDRIAL`
 
+#### G. IMMUNE_MITO (optional)
 
-#### ⚫ G. Immune + Mitochondrial Bridge (optional / rare)
-
-Axis name: IMMUNE_MITO (bridge)
-
-Definition
+Definition:
 
     • immune system 
-    • with explicit mitochondrial perturbation or metabolic rewiring 
+    • explicit mitochondrial rewiring or mitochondrial stress 
 
-Connects
+Connects:
 
 `EBV_IMMUNE ↔ MITOCHONDRIAL`
 
-Not required, but useful if encountered.
+Assign only when:
+- the GEO clearly spans both named domains, and
+- the overlap is central to the proposed contrast rather than incidental context.
 
-#### 🟤 H. Metabolic Integration Bridge (optional)
+#### H. META_INTEGRATION (optional)
 
-Axis name: META_INTEGRATION (bridge)
+Definition:
 
-Definition
+    • explicit integration of metabolism with either mitochondrial or neuronal biology 
+    • often useful when mTOR and energy-sensing are tightly coupled 
 
-    • datasets that explicitly link: 
-        ◦ mTOR ↔ mitochondrial 
-        ◦ metabolism ↔ neuronal biology 
+Assign only when:
+- the GEO clearly spans both named domains, and
+- the overlap is central to the proposed contrast rather than incidental context.
 
-Used sparingly.
 
 ---
 
-## 🧠 How axes are assigned in practice
+## 5. Axis Assignment Rules
 
 For each GEO:
 
-### Step 1 — Primary axis
+### Step 1 — Assign Primary Axis
 
 Ask:
-`What is the dominant perturbation?`
+`What is the dominant experimental perturbation?`
 
-That defines:
-`Primary Axis`
+That perturbation determines the Primary Axis.
 
-### Step 2 — Bridge axis (optional)
+### Step 2 — Assign Bridge Axis (optional)
 
 Ask:
-`Does this dataset live at the interface of two biological domains?`
+`Does this dataset meaningfully connect two biological domains?`
 
-If yes:
-`assign bridge axis`
+If yes, assign one `Bridge Axis`.
 
-### 🧬 Examples
+### Examples
+    • EBV lytic reactivation 
+        ◦ Primary Axis: EBV_IMMUNE 
+        ◦ Bridge Axis: none 
+    • SCN2A iPSC neurons 
+        ◦ Primary Axis: NEURONAL_EXCITABILITY 
+        ◦ Bridge Axis: none 
+    • IFN-treated neurons 
+        ◦ Primary Axis: EBV_IMMUNE 
+        ◦ Bridge Axis: NEURO_IMMUNE 
+    • rotenone-treated neurons 
+        ◦ Primary Axis: MITOCHONDRIAL 
+        ◦ Bridge Axis: NEURO_MITO 
+    • POLG fibroblasts 
+        ◦ Primary Axis: MITOCHONDRIAL 
+        ◦ Bridge Axis: none 
 
-#### Example 1 — GSE240008
+### Step 3 — Axis Tie-Break Rule
 
-Primary Axis: EBV_IMMUNE
-Bridge Axis: none
+If a GEO could plausibly fit more than one Primary Axis, apply the following deterministic rule:
 
-#### Example 2 — SCN2A neurons
+1. Identify the **manipulated experimental variable**.
+2. Assign the **Primary Axis** based on that manipulated variable.
+3. Treat the biological system or cellular context as a **Bridge Axis** only if it clearly links two domains.
 
-Primary Axis: NEURONAL_EXCITABILITY
-Bridge Axis: none
+Examples:
+- IFN-treated neurons  
+  - manipulated variable = immune / interferon stimulus  
+  - Primary Axis = `EBV_IMMUNE`  
+  - Bridge Axis = `NEURO_IMMUNE`
 
-#### Example 3 — IFN-treated neurons
+- rotenone-treated neurons  
+  - manipulated variable = mitochondrial insult  
+  - Primary Axis = `MITOCHONDRIAL`  
+  - Bridge Axis = `NEURO_MITO`
 
-Primary Axis: EBV_IMMUNE (immune perturbation dominates)
-Bridge Axis: N_IMMUNE
+- rapamycin-treated neurons in a TSC2 background  
+  - if the dominant perturbation under evaluation is TSC2 genotype, Primary Axis = `MTOR_METABOLIC`
+  - if the dominant perturbation under evaluation is drug response only, Primary Axis remains the pathway axis most directly represented by the manipulated variable
 
-#### Example 4 — rotenone-treated neurons
+Important:
+- cell type alone does not determine Primary Axis
+- diagnosis label alone does not determine Primary Axis
+- Bridge Axis never replaces Primary Axis
 
-Primary Axis: MITOCHONDRIAL (mitochondrial insult dominates)
-Bridge Axis: N_MITO
-
-#### Example 5 — POLG fibroblasts
-
-Primary Axis: MITOCHONDRIAL
-Bridge Axis: none
 
 ---
 
-## Scoring Weights:
+## 6. Hard Inclusion Criteria (HIC)
+
+HIC are gates, not scored features.
+
+A GEO passes HIC only if the proposed contrast satisfies all of the following:
+
+    1. Bulk RNA-seq (not scRNA-seq) 
+    2. At least 3 biological replicates per condition 
+    3. Same cell type within the proposed contrast 
+    4. Clear perturbation / case-vs-control structure 
+    5. Metadata clean enough to define the contrast unambiguously 
+
+If any one of these fails:
+- HIC = FAIL
+
+If all pass:
+- HIC = PASS
+
+### Required audit output for HIC
+
+For every scored GEO, the evaluator must explicitly state:
+
+    • Bulk RNA-seq? yes / no 
+    • ≥3 replicates per condition? yes / no 
+    • Same cell type within contrast? yes / no 
+    • Clear perturbation? yes / no 
+    • Clean metadata? yes / no 
+    • Final HIC: PASS / FAIL 
+
+### Important scoring scope
+
+All HIC and feature scores are assigned to the **proposed contrast within the GEO**, not to the GEO title or accession in the abstract.
+
+If a GEO contains multiple designs, timepoints, lineages, or perturbations, the evaluator must first define the exact intended contrast and then score that contrast only.
+
+---
+
+## 7. Scored Features
+
+All scored features use a 0.00–1.00 scale.
+
+### Feature list
+
+    • CTA — Cell Type Alignment 
+    • PTC — Perturbation Type Clarity 
+    • ExS — Experimental Simplicity 
+    • ReS — Replicate Strength 
+    • SQES — Signal Quality / Effect Size 
+    • BAR — Biological Axis Relevance 
+    • BrV — Bridge Value 
 
 
-## 🧠 4. Scoring Relationship between BAR and BrV:
+---
 
-### BAR (Biological Axis Relevance)
+## 8. Feature Definitions and Deterministic Scoring Rules
 
-    • Primary axis alignment drives BAR 
-    • Bridge axis can boost BAR slightly if highly relevant 
+### 8.1 CTA — Cell Type Alignment
 
-### BrV (Bridge Value)
+#### Weight: 0.25
 
-    • High only if: 
-`dataset meaningfully connects two axes`
+Purpose:
 
-So:
+    • measures internal cell-type coherence of the proposed contrast 
+    • highest weight because cell identity strongly shapes transcriptomic signal 
 
-```text
-| Type             | BAR  | BrV  |
-| ---------------- | ---- | ---- |
-| EBV anchor       | high | low  |
-| SCN2A anchor     | high | low  |
-| NEURO+immune     | high | high |
-| NEURO+mito       | high | high |
-```
+#### Scoring rubric
 
-## 🧠 5. Important rule
-Every GEO must have exactly ONE primary axis.
-Bridge axis is optional.
-Do NOT:
-    • assign multiple primary axes 
-    • let bridge labels replace primary identity 
+- **1.00** = same named cell type, same defined population, no mixing, no broad tissue pooling
+- **0.85** = same lineage and single defined population, with minor expected heterogeneity from differentiation state or culture variation
+- **0.70** = related but broader biological system (e.g., broader neural lineage, mixed but constrained population) that remains usable for pathway/module interpretation
+- **0.50** = mixed or partially mismatched cellular context, including systems where more than one relevant lineage contributes materially to the signal
+- **0.25** = major heterogeneity, organoid/tissue complexity, or poorly constrained mixed populations
+- **0.00** = unusable or undefined cell context for convergence work
 
-## 🏁 Final Axis Set
+#### Decision anchors
 
-### Primary axes
-EBV_IMMUNE
-NEURONAL_EXCITABILITY
-MTOR_METABOLIC
-MITOCHONDRIAL
+Use the following deterministic anchors:
 
-### Bridge axes
-NEURO_IMMUNE
-NEURO_MITO
-IMMUNE_MITO (optional)
-META_INTEGRATION (optional)
+- assign **1.00** only when the contrast is between the same clearly defined cell population on both sides
+- assign **0.85** when both groups are still the same intended population, but differentiation or culture introduces mild expected variability
+- assign **0.70** when the contrast stays within a broader lineage but cannot be described as one sharply bounded cell population
+- assign **0.50** when the transcriptomic signal likely reflects multiple materially contributing populations
+- assign **0.25** when cell heterogeneity itself is a dominant confounder
 
+#### Assignment rule
 
-## GEO SCORING RULES:
+CTA is assigned from the proposed comparison, not the whole GEO title.
 
-Formalized scoring ruleset for one-GEO-at-a-time verification
+Evaluator must state:
 
-For each GEO, SAGE returns:
-- Axis
-- HIC: Pass / Fail
-- CTA
-- PTC
-- ExS
-- ReS
-- SQES
-- BAR
-- BrV
-- FSF
+    • what the cell type is 
+    • whether the comparison is homogeneous 
+    • why the assigned value was chosen 
 
-All feature scores will be on a 0.00–1.00 scale, and FSF will be on a 0–100 scale.
+### 8.2 PTC — Perturbation Type Clarity
 
-An FSF value of 100 is a perfect GEO.
+#### Weight: 0.15
 
-### 1. HIC — Hard Inclusion Criteria
+Purpose:
 
-A GEO passes HIC only if all of the following are true for the proposed contrast:
+    • measures how clearly the GEO isolates the main perturbation 
 
-    • Bulk RNA-seq, not scRNA-seq 
-    • ≥3 biological replicates per condition 
-    • Same cell type within the contrast 
-    • Clear perturbation / case-vs-control structure 
-    • Metadata sufficiently clean to identify the contrast 
+#### Scoring rubric
 
-#### HIC output format
-
-```text
-HIC = PASS
-or
-HIC = FAIL
-```
-
-#### Audit format
-
-SAGE will show:
-- Bulk RNA-seq? yes/no
-- ≥3 replicates per group? yes/no
-- Same cell type? yes/no
-- Clear perturbation? yes/no
-- Clean metadata? yes/no
-- If any item is “no,” HIC = FAIL.
-
-
-### 2. CTA — Cell Type Alignment
-
-This score measures how internally coherent the cell type is within the proposed contrast and how useful it is for convergence work.
-
-Scoring
-    • 1.00 = single, homogeneous relevant cell type 
-    • 0.85 = same lineage, minor expected heterogeneity 
-    • 0.70 = related but broader system, still usable 
-    • 0.50 = mixed or partially mismatched cellular context 
-    • 0.25 = major heterogeneity or tissue complexity 
-    • 0.00 = unusable / undefined for convergence work 
-
-Calculation rule
-
-SAGE assigns CTA using:
-
-`CTA = cell-type coherence score`
-
-with explicit justification from the GEO design.
-
-
-### 3. PTC — Perturbation Type Clarity
-
-This measures how clearly the GEO isolates the main perturbation.
-
-Scoring
     • 1.00 = single dominant perturbation, directly interpretable 
-    • 0.85 = strong primary perturbation with minor complexity 
-    • 0.70 = interpretable but needs subsetting 
+    • 0.85 = strong primary perturbation with minor added complexity 
+    • 0.70 = interpretable but requires subsetting 
     • 0.50 = multiple simultaneous variables 
     • 0.25 = ambiguous perturbation structure 
     • 0.00 = no clean perturbation contrast 
 
-Calculation rule
+#### Assignment rule
 
-`PTC = perturbation clarity score`
+PTC is based on whether a single intended contrast can be explained clearly and reproducibly.
 
-based on how directly the GEO supports one contrast.
+Evaluator must state:
 
-### 4. ExS — Experimental Simplicity
+    • dominant perturbation 
+    • whether subsetting is required 
+    • why the final value was assigned 
 
-This measures confounding burden.
+#### Decision anchors
 
-Scoring
+- assign **1.00** when a single comparison can be directly extracted without filtering or subsetting
+- assign **0.85** when one additional factor exists but does not require removal to interpret the primary perturbation
+- assign **0.70** when the intended contrast requires explicit subsetting (e.g., selecting one timepoint or one condition from a multi-factor design)
+- assign **0.50** when multiple variables are entangled and cannot be cleanly separated without ambiguity
+
+
+### 8.3 ExS — Experimental Simplicity
+
+#### Weight: 0.10
+
+Purpose:
+
+    • measures confounding burden 
+
+#### Scoring rubric
+
     • 1.00 = simple case vs control 
     • 0.85 = one extra manageable factor 
     • 0.70 = subsettable design with moderate complexity 
-    • 0.50 = timecourse / multi-factor but still partly usable 
+    • 0.50 = timecourse / multi-factor but partly usable 
     • 0.25 = heavy confounding 
-    • 0.00 = design too complex for current RSP stage 
+    • 0.00 = too complex for current RSP stage 
 
-Calculation rule
+#### Assignment rule
 
-`ExS = simplicity / confounding score`
+ExS asks:
 
+How much non-essential complexity must be stripped away before the GEO is usable?
 
-### 5. ReS — Replicate Strength
+Evaluator must state:
 
-This is based on the smallest group size in the chosen contrast.
+    • key confounders 
+    • whether a simple subset exists 
+    • why the final value was assigned 
 
-Scoring
+#### Decision anchors
+
+- assign **1.00** when the GEO directly provides a simple case vs control comparison
+- assign **0.85** when one additional variable exists but does not materially complicate interpretation
+- assign **0.70** when a clean comparison can be obtained only after selecting a subset (e.g., one timepoint)
+- assign **0.50** when multiple interacting variables remain even after subsetting
+- assign **0.25** when confounding structure is a dominant feature of the design
+
+### 8.4 ReS — Replicate Strength
+
+#### Weight: 0.10
+
+Purpose:
+
+    • measures statistical robustness of the proposed contrast 
+
+#### Scoring rubric
+
     • 1.00 = ≥5 replicates per condition and balanced 
     • 0.90 = 4 per condition 
     • 0.80 = 3 per condition 
@@ -555,86 +436,201 @@ Scoring
     • 0.30 = highly unbalanced or unclear replication 
     • 0.00 = no usable replication 
 
-Calculation rule
+#### Assignment rule
 
-For a clean two-group comparison:
+For a two-group comparison:
 
-`ReS = lookup(min(case_n, control_n))`
-using the table above.
+ReS = lookup(min(case_n, control_n))
 
-If group sizes are unbalanced, SAGE may subtract 0.05–0.10.
+Then apply:
+    • subtract 0.05 if mildly unbalanced 
+    • subtract 0.10 if strongly unbalanced 
 
+Evaluator must show:
+    • case_n 
+    • control_n 
+    • base lookup value 
+    • any penalty applied 
+    • final ReS 
 
-### 6. SQES — Signal Quality / Effect Size
+### 8.5 SQES — Signal Quality / Effect Size
 
-This estimates whether the GEO is likely to yield strong, interpretable downstream biology.
+#### Weight: 0.15
 
-Scoring
-    • 1.00 = strong expected signal from infection / KO / clear mitochondrial insult 
+Purpose:
+
+    • estimates whether the GEO is likely to yield strong, interpretable biological signal 
+
+#### Scoring rubric
+
+    • 1.00 = strong expected signal from infection / KO / LOF / clear mitochondrial insult 
     • 0.85 = strong genotype or treatment signal 
-    • 0.70 = moderate but still likely interpretable 
+    • 0.70 = moderate but interpretable signal 
     • 0.50 = subtle signal expected 
-    • 0.25 = weak or noisy expected signal 
-    • 0.00 = unlikely to support meaningful convergence inference 
+    • 0.25 = weak or noisy signal expected 
+    • 0.00 = unlikely to support convergence inference 
 
-Calculation rule
+#### Assignment rule
 
-This is a design-informed prior, not a measured post hoc result:
+SQES is a design-informed prior, not a measured result.
 
-`SQES = expected signal strength based on perturbation class + model system`
+Evaluator must justify using:
+- perturbation strength
+- model system
+- expected downstream biology
 
-SAGE will show the rationale explicitly.
+#### Decision anchors
 
-### 7. BAR — Biological Axis Relevance
+Use the following deterministic anchors before making only small judgment adjustments:
 
-This measures how strongly the GEO maps onto your convergence system:
+- **1.00** = strong expected system-wide signal from viral infection, strong immune stimulus, clean KO/LOF, or explicit mitochondrial insult with broad downstream consequences
+- **0.85** = strong genotype-driven or treatment-driven signal expected to produce robust DEG and pathway output, but slightly less system-wide than the 1.00 class
+- **0.70** = moderate but still interpretable signal, including perturbations expected to shift defined pathways without massive transcriptome-wide response
+- **0.50** = subtle perturbation where biologically meaningful signal may exist but DEG yield or pathway strength may be modest
+- **0.25** = weak or noisy perturbation with a high chance of unstable downstream inference
+- **0.00** = perturbation unlikely to yield usable convergence signal
 
-    • EBV / immune 
-    • epilepsy / neuronal excitability 
-    • mTOR / metabolic signaling 
-    • POLG / mitochondrial biology 
-    • bridge classes: N+immune, N+mito 
+If multiple categories apply, assign the highest applicable class unless the perturbation is known to produce only localized rather than system-wide effects.
 
-Scoring
+#### Allowed adjustment range
 
-    • 1.00 = direct anchor dataset for one axis 
-    • 0.85 = strong bridge or highly relevant secondary axis 
-    • 0.70 = biologically relevant but indirect 
-    • 0.50 = weak or generic connection 
-    • 0.25 = very indirect 
-    • 0.00 = not relevant to the convergence question 
+After choosing the base class above, evaluator may adjust by at most **±0.05** if:
+- the model system is especially signal-dampening or signal-amplifying
+- the perturbation is known to be unusually subtle or unusually broad in effect
 
-Calculation rule
+The evaluator must explicitly state both:
+- the base SQES class
+- the reason for any ±0.05 adjustment
 
-`BAR = axis relevance score`
+### 8.6 BAR — Biological Axis Relevance
 
-based on directness of biological fit.
+#### Weight: 0.15
 
+Purpose:
 
-### 8. BrV — Bridge Value
+    • measures how directly the GEO maps onto the convergence framework 
 
-This measures how much the GEO helps connect otherwise mismatched axes.
+#### Scoring rubric
 
-Scoring
+- **1.00** = direct anchor dataset for one Primary Axis
+- **0.85** = strong bridge dataset or dataset tightly aligned to one Primary Axis plus a clearly relevant Bridge Axis
+- **0.70** = biologically relevant but indirect to the convergence framework
+- **0.50** = weak, generic, or only partially informative relevance
+- **0.25** = very indirect relevance
+- **0.00** = not relevant to the convergence question
 
-    • 1.00 = uniquely valuable bridge between two major axes 
-    • 0.85 = strong bridge with clear continuity role 
-    • 0.70 = useful supporting bridge 
-    • 0.50 = modest bridge value 
-    • 0.25 = mostly redundant 
-    • 0.00 = no bridge value 
+#### Decision anchors
 
-Calculation rule
+Use the following deterministic ladder:
 
-`BrV = incremental continuity value to the overall dataset graph`
+- assign **1.00** when the GEO directly instantiates one of the defined Primary Axes as its central perturbation
+- assign **0.85** when the GEO is not a direct anchor but is a strong and intentional bridge between two defined axes
+- assign **0.70** when the GEO supports one axis indirectly or captures biology adjacent to, but not centered on, the target framework
+- assign **0.50** when the GEO is only generically related to stress, development, or signaling without strong axis specificity
+- assign **0.25** when relevance is mostly speculative
+
+#### Assignment rule
+
+BAR is driven primarily by Primary Axis.
+
+A valid Bridge Axis may justify a mild upward adjustment within the rubric.
+
+Evaluator must state:
+
+    • assigned primary axis 
+    • optional bridge axis 
+    • why the dataset is direct vs indirect for this project 
+
+### 8.7 BrV — Bridge Value
+
+#### Weight: 0.10
+
+Purpose:
+
+    • measures how much the GEO improves continuity across the overall dataset graph 
+
+BrV must be evaluated relative to the currently selected dataset panel, not in isolation.
+
+If evaluating GEOs prior to assembling a dataset panel, BrV should be estimated relative to the expected convergence path (Section 13) and updated once the panel is finalized.
+
+#### Scoring rubric
+
+- **1.00** = uniquely valuable bridge between two major axes in the current panel
+- **0.85** = strong bridge with clear continuity role and few substitutes
+- **0.70** = useful supporting bridge between axes already partly connected
+- **0.50** = modest bridge value; helpful but not essential
+- **0.25** = mostly redundant within the existing panel
+- **0.00** = no bridge value
+
+#### Decision anchors
+
+Use the following deterministic ladder:
+
+- assign **1.00** only when removing this GEO would leave a major axis-to-axis gap in the current dataset graph
+- assign **0.85** when the GEO strongly connects two axes and materially improves continuity, but one or more partial alternatives exist
+- assign **0.70** when the GEO supports an already connected pair and improves confidence rather than creating the connection
+- assign **0.50** when the GEO offers some continuity value but does not substantially change the overall graph
+- assign **0.25** when the GEO is largely redundant with already-selected datasets
+- assign **0.00** when the GEO does not function as a bridge at all
+
+#### Assignment rule
+
+BrV is high only if the GEO connects otherwise mismatched axes.
 
 Important:
 
-A direct anchor GEO can have high BAR but low BrV if it does not bridge.
+    • direct anchors can have high BAR and low BrV 
+    • bridges can have high BAR and high BrV 
 
-### 9. FSF — Final Score Formula
+Evaluator must state:
 
-Weights:
+    • what two domains are being connected 
+    • whether that connection is unique or redundant 
+    • why the final value was assigned 
+
+
+
+---
+
+## 9. BAR vs BrV Relationship
+
+These two features are related but not interchangeable.
+
+### BAR
+
+asks:
+
+`How relevant is this GEO to the convergence question?`
+
+### BrV
+
+asks:
+
+`How much does this GEO improve biological continuity across the full panel?`
+
+### Examples
+
+```text
+| GEO Type            |  BAR |  BrV |
+| ------------------- | ---: | ---: |
+| EBV anchor          | high |  low |
+| SCN2A anchor        | high |  low |
+| NEURO_IMMUNE bridge | high | high |
+| NEURO_MITO bridge   | high | high |
+```
+
+
+---
+
+## 10. Final Score Formula (FSF)
+
+All intermediate values should be calculated to at least two decimal places.
+Final FSF should be reported to two decimal places.
+
+If two GEOs produce identical FSF scores, prioritize the GEO with higher BrV, then higher BAR.
+
+### Weights
+
     • CTA = 0.25 
     • PTC = 0.15 
     • ExS = 0.10 
@@ -643,8 +639,9 @@ Weights:
     • BAR = 0.15 
     • BrV = 0.10 
 
-Formula
+### Formula
 
+```text
 FSF_raw =
   0.25*CTA +
   0.15*PTC +
@@ -653,86 +650,128 @@ FSF_raw =
   0.15*SQES +
   0.15*BAR +
   0.10*BrV
-
 FSF = 100 * FSF_raw
+```
 
-Interpretation bands
-    • 85–100 = core dataset 
-    • 70–84.99 = strong support / expansion candidate 
-    • 55–69.99 = conditional / caution 
-    • <55 = reject for current RSP scope
+### Interpretation bands
 
-### 10. Output Format that SAGE uses for each scored GEO
+    • 85.00–100.00 = core dataset 
+    • 70.00–84.99 = strong support / expansion candidate 
+    • 55.00–69.99 = conditional / caution 
+    • <55.00 = reject for current RSP scope 
 
-For every GEO sent to SAGE, SAGE will return something like this:
+
+---
+
+## 11. Required Output Format for Each GEO
+
+For every GEO, the evaluator must return:
 
 ```text
 GEO: GSEXXXXX
 Primary Axis: ...
-Secondary Axis: ...
+Bridge Axis: ... or none
 HIC:
-  Bulk RNA-seq = yes
-  ≥3 replicates/condition = yes
-  Same cell type = yes
-  Clear perturbation = yes
-  Clean metadata = yes
-  → HIC = PASS
-
-CTA = 0.85
+  Bulk RNA-seq = yes/no
+  ≥3 replicates/condition = yes/no
+  Same cell type = yes/no
+  Clear perturbation = yes/no
+  Clean metadata = yes/no
+  → HIC = PASS/FAIL
+CTA = ...
   justification: ...
-
-PTC = 1.00
+PTC = ...
   justification: ...
-
-ExS = 0.70
+ExS = ...
   justification: ...
-
-ReS = 0.80
-  calculation: min(case_n, control_n)=3 → ReS=0.80
-
-SQES = 0.85
+ReS = ...
+  calculation: min(case_n, control_n)=... → base=...
+  balance penalty = ...
+  final ReS = ...
+SQES = ...
   justification: ...
-
-BAR = 1.00
+BAR = ...
   justification: ...
-
-BrV = 0.50
+BrV = ...
   justification: ...
-
 FSF_raw =
-  0.25(0.85) + 0.15(1.00) + 0.10(0.70) + 0.10(0.80) +
-  0.15(0.85) + 0.15(1.00) + 0.10(0.50)
+  0.25(CTA) + 0.15(PTC) + 0.10(ExS) + 0.10(ReS) +
+  0.15(SQES) + 0.15(BAR) + 0.10(BrV)
 = ...
-
 FSF = ... / 100
 ```
 
-## IDEAL FINAL STRUCTURE
+This format is mandatory for auditability.
 
-Your dataset panel should satisfy:
+
+---
+
+## 12. Meta-Rules for Maximizing Convergence Testing
+
+### Rule 1 — Never compare raw expression across GEOs
+
+    • within-dataset DEG only 
+    • cross-dataset comparison only at higher abstraction levels 
+
+### Rule 2 — Prefer orthogonal perturbations, but ensure continuity
+
+    • orthogonal = independent biology 
+    • bridges = shared biological space 
+
+Both are required.
+
+### Rule 3 — Optimize for Levels 2–5, not Level 1
+
+    • raw gene overlap is weak and noisy 
+    • pathways, modules, and networks carry the useful signal 
+
+### Rule 4 — Penalize “complex but impressive” datasets
+
+    • complex does not mean useful 
+    • simpler, cleaner contrasts are usually more valuable 
+
+### Rule 5 — Evaluate the dataset panel as a system
+
+    • GEO quality is important 
+    • but final utility depends on how the GEO fits into the broader convergence set 
+
+
+
+---
+
+## 13. Ideal Panel Structure
+
+The dataset panel should ideally support a biologically plausible and transcriptomically comparable progression such as:
 
 ```text
-EBV (immune)
+EBV_IMMUNE
 ↓
-neuron + immune (bridge)
+NEURO_IMMUNE
 ↓
-SCN2A neurons
+NEURONAL_EXCITABILITY
 ↓
-neuron + mitochondrial (bridge)
+NEURO_MITO
 ↓
-POLG / mitochondrial
+MITOCHONDRIAL
 ↓
-TSC2 / mTOR
+MTOR_METABOLIC
 ```
 
-Each edge should be:
-`biologically plausible` + `transcriptomically comparable`
+This is a target pattern, not a hard requirement.
 
-## Bottom Line
 
-Maximize convergence detectability by selecting datasets that are:
+---
 
-- internally clean
-- biologically aligned
-- statistically robust
-- connected through shared biological context
+## 14. Bottom Line
+
+Maximize convergence detectability by selecting GEOs that are:
+
+    • internally clean 
+    • biologically aligned 
+    • statistically robust 
+    • connected through shared biological context 
+    • auditable under this rulebook 
+
+# End of File
+
+---

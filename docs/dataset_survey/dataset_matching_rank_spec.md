@@ -1,5 +1,7 @@
 # dataset_matching_rank_spec.md
 
+## Note this document needs revision and is currently out of date
+
 # Dataset Matching Rank Specification
 
 ## Status

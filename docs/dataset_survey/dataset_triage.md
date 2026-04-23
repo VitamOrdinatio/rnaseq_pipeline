@@ -1,5 +1,7 @@
 # dataset_triage.md
 
+## Note this document needs revision and is currently out of date
+
 # 🔬 Dataset Triage Framework (Aligned to RSP)
 
 ## Purpose
