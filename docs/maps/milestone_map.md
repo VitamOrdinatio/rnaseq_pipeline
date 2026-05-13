@@ -314,8 +314,60 @@ RSP produces reusable evidence, not isolated reports
 
 ---
 
+### M9 — Workflow Orchestration Layer (Nextflow or Snakemake)
+
+Add an optional workflow-orchestration layer that wraps the existing RSP stage scripts without replacing the core Python implementation.
+
+DEX-RSP should evaluate whether `Nextflow` or `Snakemake` is the better fit for RSP based on:
+
+- local Sys76 execution
+- future MARK / HPC execution
+- reproducible public RNA-seq workflows
+- configuration-driven execution
+- compatibility with existing RSP stage contracts
+- ease of debugging and artifact capture
+
+Initial implementation should favor a lightweight wrapper architecture:
+
+```text
+workflow manager
+    → calls existing acquisition / QC / count / DEG / interpretation scripts
+    → preserves existing config files
+    → writes logs and run artifacts to standard RSP output folders
+```
+
+The workflow layer must not obscure or bypass:
+
+- run IDs
+- provenance tracking
+- sample metadata decisions
+- contrast definitions
+- validation artifacts
+- downstream GSC / RDGP output contracts
+
+Expected deliverables:
+
+- `workflows/README.md`
+- either `workflows/nextflow/main.nf` + `nextflow.config`
+- or `workflow/Snakefile` + `workflow/config/`
+- `docs/workflow_orchestration.md`
+- example command for running one benchmark dataset end-to-end
+- validation note confirming workflow-managed outputs match direct script execution
+
+Goal:
+
+RSP demonstrates modern workflow-manager awareness while preserving its core value as a transparent, contract-driven functional evidence pipeline.
+
+Important:
+
+This is an orchestration layer, not a scientific analysis layer. It should improve portability, reproducibility, and execution discipline without changing the biological interpretation model.
+
+M9 is architecture-aware but not required for the initial public v1.0 release unless DEX-RSP determines that early workflow wrapping reduces implementation complexity.
+
+---
 
 ## Release Gate (Public v1.0)
+
 RSP is portfolio-ready when:
 - at least one well-justified dataset has been processed end-to-end 
 - count matrix and DEG outputs are reproducibly generated 
@@ -328,6 +380,8 @@ RSP is portfolio-ready when:
     - validation strategy 
     - implementation details 
 - outputs are structured for later integration with GSC / RDGP and preserve provenance required for those integrations
+- optional: workflow-orchestration scaffold exists if Nextflow/Snakemake integration has begun, but workflow orchestration is not required for v1.0
+
 👉 At this point:
 RSP v1.0 (public)
 
@@ -375,9 +429,8 @@ RSP answers:
 
 ```text
 “Do transcriptomic perturbations provide 
-functional support for candidate disease genes, 
- pathways, phenotypes, or convergent biological 
- networks?”
+functional support for candidate disease genes,
+pathways, phenotypes, or convergent biological networks?
 ```
 
 ---
